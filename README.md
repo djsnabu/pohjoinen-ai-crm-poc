@@ -17,9 +17,18 @@ No real customer data is used.
 
 ## Live demo
 
-GitHub Pages URL after deployment:
-
 https://djsnabu.github.io/pohjoinen-ai-crm-poc/
+
+## Brandbook
+
+The repo now includes an Intentio-inspired visual system for the POC:
+
+- `BRANDBOOK.md` — human-readable brandbook and UI rules.
+- `DESIGN.md` — machine-readable design-token spec for agents.
+- `tokens.json` — compact design tokens for implementation.
+- `assets/intentio-logo-light.svg` — light logo asset supplied for the challenge context.
+
+This is not an official Intentio brand guide. It is a respectful adaptation of visible public-site cues: dark canvas, crisp data-led layout, lime action color, tight typography, square panels and wireframe growth motifs.
 
 ## Why this opportunity
 
@@ -65,7 +74,7 @@ Opportunity #1 — seasonal lifecycle and product-affinity CRM engine in Klaviyo
 
 I built a small browser-based CRM segmentation prototype. It uses synthetic Shopify-style customer/order data, JavaScript segmentation logic, and an AI text endpoint to generate a Klaviyo-ready campaign brief for the selected segment. The demo is intentionally simple: no backend, no real customer data, and no auto-send. It shows the core workflow Pohjoinen would need: Shopify data → customer segments → AI-generated CRM campaign brief → human approval → Klaviyo execution.
 
-Stack: static HTML/CSS/JavaScript, JavaScript modules, Pollinations text endpoint for AI generation, GitHub Pages deployment, Node assert tests.
+Stack: static HTML/CSS/JavaScript, JavaScript modules, Pollinations text endpoint for AI generation, GitHub Pages deployment, Node assert tests, and a small Intentio-inspired brandbook in the repo.
 
 ### How it would scale
 

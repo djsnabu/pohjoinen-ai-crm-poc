@@ -7,19 +7,49 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <header class="topbar" aria-label="Demo navigation">
+      <a class="brand" href="./" aria-label="Intentio-inspired POC home">
+        <img src="./assets/intentio-logo-light.svg" alt="Intentio" />
+        <span>challenge build</span>
+      </a>
+      <nav>
+        <a href="#segments-panel">Segments</a>
+        <a href="#ai-panel">AI brief</a>
+        <a href="#brandbook">Brandbook</a>
+      </nav>
+      <a class="nav-cta" href="#segments-panel">Run demo →</a>
+    </header>
+
     <main class="shell">
       <section class="hero">
-        <p class="eyebrow">Pohjoinen proof of concept · Opportunity #1</p>
-        <h1>AI CRM Segment Builder</h1>
-        <p class="lede">
-          A small working demo that turns synthetic Shopify purchase history into
-          Klaviyo-ready seasonal segments, then uses an AI text endpoint to generate
-          campaign briefs and email angles for the highest-value segment.
-        </p>
-        <div class="actions">
-          <button id="run-segmentation">Run segmentation</button>
-          <button id="generate-ai" class="secondary" disabled>Generate AI campaign brief</button>
+        <div class="hero-copy">
+          <p class="eyebrow">Pohjoinen proof of concept · Opportunity #1</p>
+          <h1>CRM engine for what customers should see next</h1>
+          <p class="lede">
+            A working demo that turns synthetic Shopify purchase history into
+            Klaviyo-ready seasonal segments, then uses an AI text endpoint to generate
+            campaign briefs and email angles for the highest-value segment.
+          </p>
+          <div class="actions">
+            <button id="run-segmentation">Run segmentation</button>
+            <button id="generate-ai" class="secondary" disabled>Generate AI campaign brief</button>
+          </div>
         </div>
+
+        <aside class="hero-visual" aria-label="Growth operating system diagram">
+          <div class="pyramid" aria-hidden="true">
+            <span class="pyramid-line line-1"></span>
+            <span class="pyramid-line line-2"></span>
+            <span class="pyramid-line line-3"></span>
+            <span class="pyramid-core"></span>
+          </div>
+          <div class="hero-tabs">
+            <span>SALES PERFORMANCE</span>
+            <span class="active">ORGANIC & AI DISCOVERABILITY</span>
+            <span>DATA & INSIGHTS</span>
+            <span>MARTECH STACK</span>
+          </div>
+        </aside>
       </section>
 
       <section class="grid stats" aria-live="polite">
@@ -36,12 +66,12 @@
           <strong id="product-count">—</strong>
         </article>
         <article>
-          <span class="label">Best phase</span>
-          <strong>Phase 1 / 30 days</strong>
+          <span class="label">Pilot phase</span>
+          <strong>30 days</strong>
         </article>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="segments-panel">
         <div class="panel-header">
           <div>
             <p class="eyebrow">Step 1</p>
@@ -52,7 +82,7 @@
         <div id="segments" class="segments empty">Run segmentation to see results.</div>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="ai-panel">
         <div class="panel-header">
           <div>
             <p class="eyebrow">Step 2</p>
@@ -63,7 +93,7 @@
         <pre id="ai-output" class="output">The AI prompt will be built from the selected segment, season, purchase signals and product feed.</pre>
       </section>
 
-      <section class="panel two-col">
+      <section class="panel two-col" id="brandbook">
         <div>
           <p class="eyebrow">How it scales</p>
           <h2>Production version</h2>
@@ -75,13 +105,13 @@
           </ul>
         </div>
         <div>
-          <p class="eyebrow">Guardrails</p>
-          <h2>What this deliberately does not do</h2>
+          <p class="eyebrow">Brandbook applied</p>
+          <h2>Intentio-inspired visual system</h2>
           <ul>
-            <li>Does not auto-send email.</li>
-            <li>Does not invent product claims beyond the product feed.</li>
-            <li>Does not upload real customer data to the public demo.</li>
-            <li>Does not require buying a generic AI marketing platform.</li>
+            <li>Deep near-black canvas, crisp rectangular surfaces and minimal borders.</li>
+            <li>One lime action color for primary interactions and selected states.</li>
+            <li>Large direct typography, uppercase service labels and data-first layout.</li>
+            <li>Wireframe growth/pyramid motif instead of generic SaaS decoration.</li>
           </ul>
         </div>
       </section>
