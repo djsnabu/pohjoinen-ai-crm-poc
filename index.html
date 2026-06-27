@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pohjoinen AI CRM Segment Builder</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">Pohjoinen proof of concept · Opportunity #1</p>
+        <h1>AI CRM Segment Builder</h1>
+        <p class="lede">
+          A small working demo that turns synthetic Shopify purchase history into
+          Klaviyo-ready seasonal segments, then uses an AI text endpoint to generate
+          campaign briefs and email angles for the highest-value segment.
+        </p>
+        <div class="actions">
+          <button id="run-segmentation">Run segmentation</button>
+          <button id="generate-ai" class="secondary" disabled>Generate AI campaign brief</button>
+        </div>
+      </section>
+
+      <section class="grid stats" aria-live="polite">
+        <article>
+          <span class="label">Synthetic customers</span>
+          <strong id="sample-count">—</strong>
+        </article>
+        <article>
+          <span class="label">Scaled CRM audience</span>
+          <strong>180,000</strong>
+        </article>
+        <article>
+          <span class="label">Products in demo feed</span>
+          <strong id="product-count">—</strong>
+        </article>
+        <article>
+          <span class="label">Best phase</span>
+          <strong>Phase 1 / 30 days</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2>Segments generated from Shopify-style orders</h2>
+          </div>
+          <p class="hint">Click a row before generating the AI brief.</p>
+        </div>
+        <div id="segments" class="segments empty">Run segmentation to see results.</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Step 2</p>
+            <h2>AI-generated Klaviyo campaign brief</h2>
+          </div>
+          <p id="ai-status" class="hint">Waiting for a selected segment.</p>
+        </div>
+        <pre id="ai-output" class="output">The AI prompt will be built from the selected segment, season, purchase signals and product feed.</pre>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <p class="eyebrow">How it scales</p>
+          <h2>Production version</h2>
+          <ul>
+            <li>Replace sample data with Shopify Admin API orders/products.</li>
+            <li>Push generated segments into Klaviyo Lists/Segments and Flows.</li>
+            <li>Run the AI call server-side so no customer PII is sent to a browser.</li>
+            <li>Keep Hanna/Kaisa approval before campaigns go live.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Guardrails</p>
+          <h2>What this deliberately does not do</h2>
+          <ul>
+            <li>Does not auto-send email.</li>
+            <li>Does not invent product claims beyond the product feed.</li>
+            <li>Does not upload real customer data to the public demo.</li>
+            <li>Does not require buying a generic AI marketing platform.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./src/app.mjs"></script>
+  </body>
+</html>
