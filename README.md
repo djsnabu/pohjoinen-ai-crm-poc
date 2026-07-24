@@ -1,5 +1,7 @@
 # Pohjoinen AI CRM Segment Builder
 
+[![CI](https://github.com/djsnabu/pohjoinen-ai-crm-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/djsnabu/pohjoinen-ai-crm-poc/actions/workflows/ci.yml)
+
 Proof of concept for Intentio's Marketing AI challenge.
 
 ## What it demonstrates
@@ -10,10 +12,45 @@ This demo uses synthetic Shopify-style customer/order data to:
 
 1. Generate practical Klaviyo segments for Pohjoinen.
 2. Score the segments by estimated audience, LTV and speed-to-value.
-3. Build an AI prompt from the selected segment and product feed.
-4. Call an AI text endpoint to generate a campaign brief, subject lines, product block logic and review checklist.
+3. Estimate the revenue impact of a segment with transparent assumptions.
+4. Build an AI prompt from the selected segment and product feed.
+5. Call an AI text endpoint to generate a campaign brief, subject lines, product block logic and review checklist.
 
-No real customer data is used.
+No real customer data is used. The synthetic base is ~800 customers generated
+deterministically from a seeded PRNG (see `src/generate.mjs`), on top of a small
+set of hand-authored example rows.
+
+## Local AI mode (no data leaves the machine)
+
+The strongest version of this demo runs the AI **server-side against a local
+model**, so no customer data and no model credentials ever reach the browser.
+
+```text
+Browser  --(segment id)-->  Node proxy  --(prompt)-->  local llama.cpp (Qwen)
+                                 |
+                          builds prompt from
+                          trusted server-side data
+```
+
+Run it with a local llama.cpp OpenAI-compatible server on `:8080`:
+
+```bash
+node server.mjs
+# open http://localhost:4173
+
+# optional env:
+#   LLAMA_BASE_URL  (default http://127.0.0.1:8080/v1)
+#   LLAMA_MODEL     (default qwen36-hauhau-balanced-32k)
+#   PORT            (default 4173)
+```
+
+`POST /api/generate` takes only a `segmentId`, builds the prompt on the server
+from trusted data, calls the local model, and returns the brief. If the local
+model is unreachable it returns a deterministic fallback brief and says so —
+it never fabricates a model answer.
+
+The public GitHub Pages demo has no backend, so it falls back to a public text
+endpoint and then to the offline brief.
 
 ## Live demo
 

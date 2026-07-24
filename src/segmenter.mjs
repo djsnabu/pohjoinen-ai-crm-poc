@@ -1,6 +1,7 @@
 import { products } from "./data.mjs";
+import { SCALE_TO_AUDIENCE } from "./customers.mjs";
 
-const SCALE_TO_180K = 180000 / 18;
+const SCALE_TO_180K = SCALE_TO_AUDIENCE;
 
 function categoriesFor(customer, productBySku) {
   return new Set(customer.orders.map((sku) => productBySku.get(sku)?.category).filter(Boolean));
@@ -108,4 +109,38 @@ export function buildPrompt(segment) {
 export function offlineBrief(segment) {
   const products = segment.topProducts.map((p) => p.name).join(", ");
   return `Offline fallback brief for ${segment.name}\n\nCampaign angle:\nUse ${segment.why.toLowerCase()}\n\nSubject lines:\n- Your next ${segment.name.toLowerCase()} kit, ready before the season shifts\n- Pohjoinen picks based on what you bought before\n- Complete your setup: ${segment.topProducts[0]?.name || "seasonal gear"}\n\nEmail intro:\nBased on your previous Pohjoinen purchases, this is a timely moment to prepare for the next outdoor season. We picked practical gear that matches your category interest and helps complete your setup.\n\nDynamic product block logic:\nPrioritise: ${products}. Exclude out-of-stock SKUs and avoid showing items the customer already bought unless they are replenishable accessories.\n\nPrimary KPI:\nRevenue per recipient and repeat purchase rate.\n\nHuman review checklist:\nCheck product availability, discounts, claims, tone of voice and unsubscribe risk before launch.`;
+}
+
+/**
+ * Rough revenue-impact estimate for a segment, using transparent assumptions.
+ * This is intentionally simple and conservative — it is a planning aid to show
+ * why segmentation matters, not a forecast. All assumptions are surfaced in the
+ * UI so nobody mistakes it for a promise.
+ *
+ * @param {object} segment segment produced by segmentCustomers
+ * @param {object} [assumptions]
+ * @param {number} [assumptions.openRate] share who open (0..1)
+ * @param {number} [assumptions.conversionRate] share of openers who buy (0..1)
+ * @param {number} [assumptions.aovFactor] avg order value as a fraction of avgLtv
+ */
+export function estimateImpact(segment, assumptions = {}) {
+  const openRate = assumptions.openRate ?? 0.42;
+  const conversionRate = assumptions.conversionRate ?? 0.03;
+  const aovFactor = assumptions.aovFactor ?? 0.35;
+
+  const reach = segment.estimatedAudience;
+  const opens = reach * openRate;
+  const buyers = opens * conversionRate;
+  const avgOrderValue = Math.max(30, Math.round(segment.avgLtv * aovFactor));
+  const revenue = Math.round(buyers * avgOrderValue);
+  const revenuePerRecipient = reach > 0 ? revenue / reach : 0;
+
+  return {
+    reach,
+    estimatedBuyers: Math.round(buyers),
+    avgOrderValue,
+    estimatedRevenue: revenue,
+    revenuePerRecipient: Math.round(revenuePerRecipient * 100) / 100,
+    assumptions: { openRate, conversionRate, aovFactor }
+  };
 }

@@ -11,7 +11,10 @@ export const products = [
   { sku: "DRY-BAG-070", name: "StormPack Dry Bag", category: "accessories", season: "all-season", price: 39, margin: "medium" }
 ];
 
-export const customers = [
+// Hand-authored "verified" example customers. These stay stable so the demo
+// always has a few readable, human-checkable rows. The bulk of the base is
+// generated deterministically in generate.mjs and merged below.
+export const seedCustomers = [
   { id: "C-1001", country: "FI", ltv: 620, lastPurchaseDays: 46, orders: ["WIN-JACKET-001", "WIN-BOOT-011", "BASE-LAYER-012"] },
   { id: "C-1002", country: "FI", ltv: 185, lastPurchaseDays: 22, orders: ["HIKE-BOOT-210", "DRY-BAG-070"] },
   { id: "C-1003", country: "EE", ltv: 88, lastPurchaseDays: 210, orders: ["CAMP-STOVE-088"] },
