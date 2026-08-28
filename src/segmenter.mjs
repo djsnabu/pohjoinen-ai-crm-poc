@@ -71,11 +71,13 @@ export function segmentCustomers(customers, productFeed = products) {
     {
       id: "first-kit-buyers",
       name: "First-kit buyers",
-      klaviyoLogic: "1 order OR lifetime value < €150, category-specific onboarding",
+      klaviyoLogic: "Exactly 1 order AND lifetime value < €150, category-specific onboarding",
       phase: "Phase 1 / next 30 days",
       why: "Occasional buyers can become repeat buyers if Pohjoinen helps them complete the kit after the first purchase.",
       trigger: "Post-purchase onboarding and next-best-accessory flow",
-      test: (c) => c.orderCount === 1 || c.ltv < 150
+      // AND, not OR: a customer with 5 small orders is a frequent low-ticket
+      // buyer, not a first-kit buyer, and should not enter onboarding.
+      test: (c) => c.orderCount === 1 && c.ltv < 150
     }
   ];
 
@@ -84,10 +86,11 @@ export function segmentCustomers(customers, productFeed = products) {
       const members = enriched.filter(definition.test);
       const avgLtv = members.length ? members.reduce((sum, c) => sum + c.ltv, 0) / members.length : 0;
       const estimatedAudience = Math.round(members.length * SCALE_TO_180K);
-      const score = Math.round((estimatedAudience / 1000) * 0.55 + avgLtv * 0.08 + (definition.phase.startsWith("Phase 1") ? 15 : 5));
+      const score = scoreSegment({ estimatedAudience, avgLtv, phase: definition.phase });
       return {
         ...definition,
         sampleSize: members.length,
+        memberIds: members.map((c) => c.id),
         estimatedAudience,
         avgLtv: Math.round(avgLtv),
         score,
@@ -96,6 +99,73 @@ export function segmentCustomers(customers, productFeed = products) {
     })
     .filter((segment) => segment.sampleSize > 0)
     .sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Priority score used only to order segments for a pilot shortlist.
+ *
+ * The weights are deliberate product decisions, not a fitted model:
+ * - AUDIENCE_WEIGHT: each 1,000 reachable people adds 0.55. Reach matters, but
+ *   a large low-value list should not outrank a small high-value one.
+ * - LTV_WEIGHT: each €1 of average lifetime value adds 0.08, so a €300 segment
+ *   contributes ~24 points — roughly comparable to 44,000 reachable people.
+ *   This is what keeps value and volume in the same order of magnitude.
+ * - PHASE_BONUS: a flat bonus for segments that can ship inside the 30-day
+ *   pilot, because speed-to-value was an explicit goal.
+ *
+ * The output is a ranking aid. It is not revenue and not a forecast.
+ */
+export const SCORE_WEIGHTS = {
+  AUDIENCE_WEIGHT: 0.55,
+  LTV_WEIGHT: 0.08,
+  PHASE_1_BONUS: 15,
+  LATER_PHASE_BONUS: 5
+};
+
+export function scoreSegment({ estimatedAudience, avgLtv, phase }) {
+  const { AUDIENCE_WEIGHT, LTV_WEIGHT, PHASE_1_BONUS, LATER_PHASE_BONUS } = SCORE_WEIGHTS;
+  const phaseBonus = phase.startsWith("Phase 1") ? PHASE_1_BONUS : LATER_PHASE_BONUS;
+  return Math.round((estimatedAudience / 1000) * AUDIENCE_WEIGHT + avgLtv * LTV_WEIGHT + phaseBonus);
+}
+
+/**
+ * Segments are intentionally NOT mutually exclusive — a single customer can be
+ * a winter loyalist, a multi-season VIP and a hiking buyer at the same time.
+ * That is normal in CRM, but it means the segment audiences cannot simply be
+ * added up: the sum will exceed the real reachable audience.
+ *
+ * This measures the overlap explicitly so the UI can show the true deduplicated
+ * reach instead of an inflated total.
+ *
+ * @param {object[]} segments output of segmentCustomers
+ * @param {number} totalCustomers size of the synthetic base
+ */
+export function analyseOverlap(segments, totalCustomers) {
+  const unique = new Set();
+  let sumOfSegments = 0;
+  const timesSegmented = new Map();
+
+  for (const segment of segments) {
+    sumOfSegments += segment.sampleSize;
+    for (const id of segment.memberIds) {
+      unique.add(id);
+      timesSegmented.set(id, (timesSegmented.get(id) || 0) + 1);
+    }
+  }
+
+  const inMultiple = [...timesSegmented.values()].filter((n) => n > 1).length;
+  const uniqueCovered = unique.size;
+
+  return {
+    sumOfSegments,
+    uniqueCustomers: uniqueCovered,
+    duplicateCount: sumOfSegments - uniqueCovered,
+    overlapRatio: sumOfSegments > 0 ? Math.round(((sumOfSegments - uniqueCovered) / sumOfSegments) * 100) / 100 : 0,
+    customersInMultipleSegments: inMultiple,
+    uncoveredCustomers: totalCustomers - uniqueCovered,
+    coverage: totalCustomers > 0 ? Math.round((uniqueCovered / totalCustomers) * 100) / 100 : 0,
+    estimatedUniqueAudience: Math.round(uniqueCovered * SCALE_TO_180K)
+  };
 }
 
 export function buildPrompt(segment) {

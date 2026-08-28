@@ -1,8 +1,8 @@
-# Brandbook — Intentio-inspired POC
+# Style guide — AI CRM Segment Builder
 
 This is a small repository-local brandbook for the Pohjoinen AI CRM proof of concept.
 
-Important: this is an Intentio-inspired adaptation for a job application demo, not an official Intentio brand guide.
+This is the visual system for a self-contained portfolio demo. It is not associated with, endorsed by, or derived from any company's official brand guidelines.
 
 ## Visual direction
 
@@ -36,7 +36,7 @@ Important: this is an Intentio-inspired adaptation for a job application demo, n
 
 ### Header
 
-Use the provided light Intentio logo asset on the dark canvas with a small neutral qualifier such as `challenge build` so the repo does not imply it is an official company property.
+Use the plain `CRM` wordmark on the dark canvas. Do not use any third-party company logo or trademark in this demo.
 
 ### Buttons
 
@@ -52,11 +52,10 @@ Treat segment cards like operational rows: columns for logic, audience, LTV and 
 
 ### Data motif
 
-Use abstract wireframe shapes to suggest growth systems, funnels and hierarchy. Do not copy exact case-study charts from intentio.fi.
+Use abstract wireframe shapes to suggest funnels, hierarchy and data flow. Do not reproduce charts, layouts or case-study visuals from any real company's site.
 
 ## Files using this brandbook
 
 - `index.html`
 - `styles.css`
-- `assets/intentio-logo-light.svg`
 - `DESIGN.md`

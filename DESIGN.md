@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Intentio-inspired POC
+name: AI CRM Segment Builder POC
 colors:
   primary: "#070707"
   secondary: "#111111"
@@ -59,7 +59,7 @@ components:
 
 ## Overview
 
-This repository uses an Intentio-inspired visual system for a job-application proof of concept. It is not an official Intentio brand guide. The goal is to make the demo feel aligned with Intentio's public site: dark, strategic, data-led, structured and performance-oriented.
+This repository uses a self-contained dark, data-led visual system for a proof-of-concept demo. It is not associated with or derived from any company's official brand guidelines. The goal is a structured, performance-oriented feel appropriate to an analytics/CRM tool.
 
 The UI should feel more like a growth agency operating system than a generic SaaS dashboard.
 
@@ -74,7 +74,7 @@ The UI should feel more like a growth agency operating system than a generic Saa
 
 ## Typography
 
-Use system sans as the practical substitute for the geometric/Geist-like feel seen on intentio.fi. Headlines are very large, tight and direct. Labels use monospace, uppercase and high letter-spacing to create a data/operations feel.
+Use system sans for a clean geometric feel. Headlines are very large, tight and direct. Labels use monospace, uppercase and high letter-spacing to create a data/operations feel.
 
 ## Layout
 
@@ -110,4 +110,4 @@ Don't:
 - Use generic neon cyber gradients.
 - Use rounded glassmorphism cards.
 - Add fake logos, fake testimonials or decorative stats.
-- Imply this is an official Intentio asset or endorsed by Intentio.
+- Use any third-party company logo, trademark or brand asset.

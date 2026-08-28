@@ -8,14 +8,14 @@
   </head>
   <body>
     <header class="topbar" aria-label="Demo navigation">
-      <a class="brand" href="./" aria-label="Intentio-inspired POC home">
-        <img src="./assets/intentio-logo-light.svg" alt="Intentio" />
-        <span>challenge build</span>
+      <a class="brand" href="./" aria-label="Pohjoinen AI CRM demo home">
+        <span class="brand-mark">CRM</span>
+        <span>segment builder</span>
       </a>
       <nav>
         <a href="#segments-panel">Segments</a>
         <a href="#ai-panel">AI brief</a>
-        <a href="#brandbook">Brandbook</a>
+        <a href="#overlap-panel">Overlap</a>
       </nav>
       <a class="nav-cta" href="#segments-panel">Run demo →</a>
     </header>
@@ -23,7 +23,7 @@
     <main class="shell">
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Pohjoinen proof of concept · Opportunity #1</p>
+          <p class="eyebrow">Proof of concept · Ecommerce CRM segmentation</p>
           <h1>CRM engine for what customers should see next</h1>
           <p class="lede">
             A working demo that turns synthetic Shopify purchase history into
@@ -36,7 +36,7 @@
           </div>
         </div>
 
-        <aside class="hero-visual" aria-label="Growth operating system diagram">
+        <aside class="hero-visual" aria-label="Segmentation pipeline">
           <div class="pyramid" aria-hidden="true">
             <span class="pyramid-line line-1"></span>
             <span class="pyramid-line line-2"></span>
@@ -44,10 +44,10 @@
             <span class="pyramid-core"></span>
           </div>
           <div class="hero-tabs">
-            <span>SALES PERFORMANCE</span>
-            <span class="active">ORGANIC & AI DISCOVERABILITY</span>
-            <span>DATA & INSIGHTS</span>
-            <span>MARTECH STACK</span>
+            <span>SHOPIFY ORDERS</span>
+            <span class="active">RULE-BASED SEGMENTS</span>
+            <span>AI CAMPAIGN BRIEF</span>
+            <span>HUMAN APPROVAL</span>
           </div>
         </aside>
       </section>
@@ -104,7 +104,18 @@
         <div id="impact" class="impact empty">Select a segment to estimate its revenue impact.</div>
       </section>
 
-      <section class="panel two-col" id="brandbook">
+      <section class="panel" id="overlap-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Data quality</p>
+            <h2>Segment overlap</h2>
+          </div>
+          <p class="hint">Segments are not mutually exclusive — reach cannot simply be added up.</p>
+        </div>
+        <div id="overlap" class="impact empty">Run segmentation to measure how much the segments overlap.</div>
+      </section>
+
+      <section class="panel two-col" id="production">
         <div>
           <p class="eyebrow">How it scales</p>
           <h2>Production version</h2>
@@ -112,17 +123,18 @@
             <li>Replace sample data with Shopify Admin API orders/products.</li>
             <li>Push generated segments into Klaviyo Lists/Segments and Flows.</li>
             <li>Run the AI call server-side so no customer PII is sent to a browser.</li>
-            <li>Keep Hanna/Kaisa approval before campaigns go live.</li>
+            <li>Add priority/suppression rules so overlapping segments do not double-send.</li>
+            <li>Keep marketing approval before any campaign goes live.</li>
           </ul>
         </div>
         <div>
-          <p class="eyebrow">Brandbook applied</p>
-          <h2>Intentio-inspired visual system</h2>
+          <p class="eyebrow">Deliberate limits</p>
+          <h2>What this demo does not do</h2>
           <ul>
-            <li>Deep near-black canvas, crisp rectangular surfaces and minimal borders.</li>
-            <li>One lime action color for primary interactions and selected states.</li>
-            <li>Large direct typography, uppercase service labels and data-first layout.</li>
-            <li>Wireframe growth/pyramid motif instead of generic SaaS decoration.</li>
+            <li>No real customer data — the base is synthetic and seeded.</li>
+            <li>No sending: the app never writes to Klaviyo or dispatches email.</li>
+            <li>Revenue figures are transparent estimates, not forecasts.</li>
+            <li>Segmentation stays rule-based and testable; AI only writes copy.</li>
           </ul>
         </div>
       </section>

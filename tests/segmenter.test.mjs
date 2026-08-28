@@ -5,7 +5,10 @@ import {
   buildPrompt,
   offlineBrief,
   segmentCustomers,
-  estimateImpact
+  estimateImpact,
+  analyseOverlap,
+  scoreSegment,
+  SCORE_WEIGHTS
 } from "../src/segmenter.mjs";
 
 // --- Data base ---------------------------------------------------------------
@@ -33,6 +36,72 @@ assert.ok(
   segments.every((s) => s.estimatedAudience <= 180000),
   "no single segment should exceed the total audience"
 );
+
+// --- Segment overlap ---------------------------------------------------------
+// Segments are not mutually exclusive. The demo must not present the sum of
+// segment sizes as if it were reachable audience.
+const overlap = analyseOverlap(segments, customers.length);
+
+assert.ok(
+  overlap.sumOfSegments > overlap.uniqueCustomers,
+  "segments should genuinely overlap in this dataset"
+);
+assert.equal(
+  overlap.duplicateCount,
+  overlap.sumOfSegments - overlap.uniqueCustomers,
+  "duplicate count must reconcile sum vs unique"
+);
+assert.ok(
+  overlap.uniqueCustomers <= customers.length,
+  "unique covered customers cannot exceed the customer base"
+);
+assert.ok(
+  overlap.estimatedUniqueAudience <= 180000,
+  "deduplicated audience must stay within the real subscriber base"
+);
+assert.ok(
+  overlap.customersInMultipleSegments > 0,
+  "at least some customers should belong to several segments"
+);
+assert.ok(
+  overlap.overlapRatio > 0 && overlap.overlapRatio < 1,
+  "overlap ratio should be a meaningful fraction"
+);
+assert.ok(
+  overlap.coverage > 0 && overlap.coverage <= 1,
+  "coverage should be a fraction of the base"
+);
+assert.equal(
+  overlap.uncoveredCustomers,
+  customers.length - overlap.uniqueCustomers,
+  "uncovered customers must reconcile with the base"
+);
+
+// --- First-kit buyers must be genuinely new ---------------------------------
+// Regression guard: this segment previously used OR, which pulled frequent
+// low-ticket buyers into a first-purchase onboarding flow.
+const firstKit = segments.find((s) => s.id === "first-kit-buyers");
+if (firstKit) {
+  const members = customers.filter((c) => firstKit.memberIds.includes(c.id));
+  assert.ok(
+    members.every((c) => c.orders.length === 1 && c.ltv < 150),
+    "first-kit buyers must have exactly one order AND low lifetime value"
+  );
+}
+
+// --- Scoring -----------------------------------------------------------------
+// Weights are product decisions, so pin the behaviour they are meant to encode.
+assert.ok(
+  scoreSegment({ estimatedAudience: 50000, avgLtv: 300, phase: "Phase 1 / next 30 days" }) >
+    scoreSegment({ estimatedAudience: 50000, avgLtv: 300, phase: "Phase 2 / 60-90 days" }),
+  "shipping inside the pilot window should rank higher"
+);
+assert.ok(
+  scoreSegment({ estimatedAudience: 10000, avgLtv: 800, phase: "Phase 1 / next 30 days" }) >
+    scoreSegment({ estimatedAudience: 20000, avgLtv: 60, phase: "Phase 1 / next 30 days" }),
+  "a small high-value segment should beat a larger low-value one"
+);
+assert.ok(SCORE_WEIGHTS.LTV_WEIGHT > 0 && SCORE_WEIGHTS.AUDIENCE_WEIGHT > 0, "weights must be documented and positive");
 
 // --- Prompt ------------------------------------------------------------------
 const prompt = buildPrompt(segments[0]);
@@ -65,5 +134,13 @@ console.log("all tests passed", {
   customers: customers.length,
   scale: Math.round(SCALE_TO_AUDIENCE),
   segments: segments.map((s) => [s.id, s.estimatedAudience, s.score]),
-  topRevenue: estimateImpact(segments[0]).estimatedRevenue
+  topRevenue: estimateImpact(segments[0]).estimatedRevenue,
+  overlap: {
+    sumOfSegments: overlap.sumOfSegments,
+    uniqueCustomers: overlap.uniqueCustomers,
+    overlapRatio: overlap.overlapRatio,
+    inMultipleSegments: overlap.customersInMultipleSegments,
+    coverage: overlap.coverage,
+    dedupedAudience: overlap.estimatedUniqueAudience
+  }
 });

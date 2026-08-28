@@ -1,5 +1,5 @@
 import { products, customers } from "./customers.mjs";
-import { buildPrompt, offlineBrief, segmentCustomers, estimateImpact } from "./segmenter.mjs";
+import { buildPrompt, offlineBrief, segmentCustomers, estimateImpact, analyseOverlap } from "./segmenter.mjs";
 
 const els = {
   sampleCount: document.querySelector("#sample-count"),
@@ -9,7 +9,8 @@ const els = {
   segments: document.querySelector("#segments"),
   output: document.querySelector("#ai-output"),
   status: document.querySelector("#ai-status"),
-  impact: document.querySelector("#impact")
+  impact: document.querySelector("#impact"),
+  overlap: document.querySelector("#overlap")
 };
 
 let segments = [];
@@ -17,6 +18,56 @@ let selected = null;
 
 els.sampleCount.textContent = customers.length;
 els.productCount.textContent = products.length;
+
+// Segments are not mutually exclusive, so the sum of segment audiences is
+// larger than the real reachable audience. Show that explicitly rather than
+// quietly presenting an inflated number.
+function renderOverlap() {
+  if (!segments.length) {
+    els.overlap.classList.add("empty");
+    els.overlap.textContent = "Run segmentation to measure how much the segments overlap.";
+    return;
+  }
+  const o = analyseOverlap(segments, customers.length);
+  const naiveAudience = segments.reduce((sum, s) => sum + s.estimatedAudience, 0);
+  const num = (n) => n.toLocaleString("en-US");
+
+  els.overlap.classList.remove("empty");
+  els.overlap.innerHTML = `
+    <div class="impact-grid">
+      <article>
+        <span class="label">Sum of segment reach</span>
+        <strong>${num(naiveAudience)}</strong>
+      </article>
+      <article class="impact-highlight">
+        <span class="label">Actual unique reach</span>
+        <strong>${num(o.estimatedUniqueAudience)}</strong>
+      </article>
+      <article>
+        <span class="label">Overlap</span>
+        <strong>${Math.round(o.overlapRatio * 100)}%</strong>
+      </article>
+      <article>
+        <span class="label">In 2+ segments</span>
+        <strong>${num(o.customersInMultipleSegments)}</strong>
+      </article>
+      <article>
+        <span class="label">Base covered</span>
+        <strong>${Math.round(o.coverage * 100)}%</strong>
+      </article>
+    </div>
+    <p class="impact-assumptions">
+      Adding segment sizes together double-counts ${num(o.duplicateCount)} memberships:
+      ${num(o.customersInMultipleSegments)} of ${num(customers.length)} customers qualify for
+      more than one segment. Deduplicated, the segments reach
+      ${num(o.estimatedUniqueAudience)} people, not ${num(naiveAudience)}.
+      ${num(o.uncoveredCustomers)} customers match no segment and would need
+      their own treatment before a full-list rollout.
+      Overlap is normal in CRM, but it must be resolved with priority or
+      suppression rules so one person does not receive several campaigns at once.
+    </p>
+  `;
+}
 
 function renderImpact() {
   if (!selected) {
@@ -141,6 +192,7 @@ els.run.addEventListener("click", () => {
   els.output.textContent = buildPrompt(selected);
   renderSegments();
   renderImpact();
+  renderOverlap();
 });
 
 els.ai.addEventListener("click", async () => {
