@@ -15,7 +15,7 @@
 //
 // Env:
 //   LLAMA_BASE_URL  (default http://127.0.0.1:8080/v1)
-//   LLAMA_MODEL     (default qwen36-hauhau-balanced-32k)
+//   LLAMA_MODEL     (default qwen36-official-64k)
 //   PORT            (default 4173)
 
 import { createServer } from "node:http";
@@ -29,7 +29,7 @@ import { segmentCustomers, buildPrompt, offlineBrief } from "./src/segmenter.mjs
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT || 4173);
 const LLAMA_BASE_URL = process.env.LLAMA_BASE_URL || "http://127.0.0.1:8080/v1";
-const LLAMA_MODEL = process.env.LLAMA_MODEL || "qwen36-hauhau-balanced-32k";
+const LLAMA_MODEL = process.env.LLAMA_MODEL || "qwen36-official-64k";
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
